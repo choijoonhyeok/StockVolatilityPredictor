@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.scoula.articleCrawling.mapper.ArticleCrawlingMapper">
+
+    <!-- 크롤링한 기사 저장 -->
+    <insert id="insertArticle" parameterType="org.scoula.articleCrawling.dto.ArticleCrawlingDTO">
+        INSERT INTO news_articles
+        (title, content,publish_date)
+        VALUES
+            (#{title}, #{content}, #{publishDate})
+    </insert>
+
+
+    <!-- 내 전체 계좌 조회 -->
+    <select id="selectArticle"
+            resultType="org.scoula.articleCrawling.dto.ArticleCrawlingDTO">
+        SELECT *
+        FROM news_articles
+    </select>
+
+    <select id="countByTitleAndContent" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM news_articles
+        WHERE title = #{title} AND content = #{content}
+    </select>
+</mapper>
