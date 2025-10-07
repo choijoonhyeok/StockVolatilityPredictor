@@ -9,5 +9,6 @@ import java.util.List;
 public interface WeightedTokenMapper {
     int selectTotalDocs();
 
+    // totalDocs를 SQL에서 IDF 계산용으로 넘겨줌
     List<TokenScore> selectAllTFIDF(int totalDocs);
 }

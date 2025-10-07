@@ -5,21 +5,37 @@
 <mapper namespace="org.scoula.weightedToken.WeightedTokenMapper">
 
     <select id="selectAllTFIDF" resultType="org.scoula.weightedToken.dto.TokenScore">
-        SELECT t.token_id, t.token, t.article_id,
-               (t.frequency / doc_total.total_words) AS tf,
-               LOG(#{totalDocs} / (1 + df_table.df)) AS idf,
-               (t.frequency / doc_total.total_words) * LOG(#{totalDocs} / (1 + df_table.df)) AS tfidf
+        SELECT
+            t.token_id,
+            t.token,
+            t.article_id,
+            t.publish_time,  -- ✅ 기사 발행일을 여기서 가져옴
+            (t.frequency / doc_total.total_words) AS tf,
+            LOG(#{totalDocs} / (1 + df_table.df)) AS idf,
+            (t.frequency / doc_total.total_words) * LOG(#{totalDocs} / (1 + df_table.df)) AS tfidf
         FROM article_tokens t
-                 JOIN (SELECT article_id, SUM(frequency) AS total_words
-                       FROM article_tokens GROUP BY article_id) doc_total
-                      ON t.article_id = doc_total.article_id
-                 JOIN (SELECT token, COUNT(DISTINCT article_id) AS df
-                       FROM article_tokens GROUP BY token) df_table
-                      ON t.token = df_table.token
+                 JOIN (
+            SELECT article_id, SUM(frequency) AS total_words
+            FROM article_tokens
+            GROUP BY article_id
+        ) doc_total ON t.article_id = doc_total.article_id
+                 JOIN (
+            SELECT token, COUNT(DISTINCT article_id) AS df
+            FROM article_tokens
+            GROUP BY token
+        ) df_table ON t.token = df_table.token
     </select>
 
 
     <select id="selectTotalDocs" resultType="int">
         SELECT COUNT(*) FROM news_articles
+    </select>
+
+    <select id="selectNextAvailableVolatility" resultType="Double">
+        SELECT volatility
+        FROM stock_prices
+        WHERE stock_date >= #{targetDate}
+        ORDER BY stock_date ASC
+            LIMIT 1
     </select>
 </mapper>

@@ -21,7 +21,6 @@ public class WeightedToken {
     }
 
     public static void main(String[] args) {
-
         // 1️⃣ 직접 SqlSessionFactory 생성
         PooledDataSource dataSource = new PooledDataSource();
         dataSource.setDriver("com.mysql.cj.jdbc.Driver");
@@ -40,28 +39,33 @@ public class WeightedToken {
 
     public void calculateAndPrintTFIDF() {
         try (SqlSession session = sqlSessionFactory.openSession()) {
-
             WeightedTokenMapper mapper = session.getMapper(WeightedTokenMapper.class);
 
             // 전체 문서 수 가져오기
             int totalDocs = mapper.selectTotalDocs();
 
-            // TF-IDF 계산
+            // TF-IDF 값 전부 가져오기 (⚡ totalDocs는 여기서 쓰지 않음)
             List<TokenScore> scores = mapper.selectAllTFIDF(totalDocs);
 
             // 평균과 표준편차 계산
-            double mean = scores.stream().mapToDouble(TokenScore::getTfidf).average().orElse(0.0);
+            double mean = scores.stream()
+                    .mapToDouble(TokenScore::getTfidf)
+                    .average().orElse(0.0);
+
             double stddev = Math.sqrt(scores.stream()
                     .mapToDouble(s -> Math.pow(s.getTfidf() - mean, 2))
                     .average().orElse(0.0));
 
             // 정규화 계산 및 출력
+            int count = 0;
             for (TokenScore ts : scores) {
+                count++;
                 ts.setNormalized((stddev == 0) ? 0 : (ts.getTfidf() - mean) / stddev);
-                System.out.printf("Token: %-15s | Article: %d | TF-IDF: %.6f | Normalized: %.6f%n",
-                        ts.getToken(), ts.getArticleId(), ts.getTfidf(), ts.getNormalized());
+                System.out.printf("Token: %-15s | TokenID: %d | Article: %d | TF-IDF: %.6f | Normalized: %.6f | Count: %d%n",
+                        ts.getToken(), ts.getTokenId(), ts.getArticleId(), ts.getTfidf(), ts.getNormalized(), count);
             }
 
+            System.out.println("전체 문서 수: " + totalDocs);
             System.out.println("✅ TF-IDF 가중치 계산 및 출력 완료!");
         }
     }
