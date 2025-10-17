@@ -47,9 +47,25 @@ public class stopwordRemover {
                     Timestamp publishTime = rs.getTimestamp("publish_time");
 
                     // 2) 텍스트 정제
+
+                    // 저작권, 기자, 이메일,언론사 등 제거
                     content = content.replaceAll("Copyright ©.*", "");
-                    content = content.replaceAll("[^가-힣a-zA-Z0-9\\s]", " ");
+                    // 기자 이름 및 서명 제거
+                    content = content.replaceAll("[가-힣]{2,4}\\s?[a-zA-Z가-힣\\.]+\\s?기자", "");
+                    content = content.replaceAll("[가-힣A-Za-z]+\\s*기자", "");
+                    content = content.replaceAll("무단\\s*전재\\s*및\\s*재배포.*", "");
+                    content = content.replaceAll("AI학습\\s*이용\\s*금지", "");
+                    content = content.replaceAll("머니투데이|연합뉴스|조선일보|중앙일보|한겨레|한국경제|서울경제|매일경제", "");
+                    content = content.replaceAll("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+", "");
+
+
+                    //URL 제거
                     content = content.replaceAll("http[s]?://\\S+", " ");
+
+                    //특수문자 중 불필요한 것만 제거 (문장부로 일부는 유지)
+                    content = content.replaceAll("[^가-힣a-zA-Z0-9\\s]", " ");
+
+                    // 공백 정리 (띄어쓰기 유지, 중복 공백만 제거)
                     content = content.replaceAll("\\s+", " ").trim();
 
                     // 3) 명사 추출

@@ -4,12 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.scoula.weightedToken.WeightedTokenMapper">
 
-    <select id="selectAllTFIDF" resultType="org.scoula.weightedToken.dto.TokenScore">
+    <select id="selectAllTFIDF" parameterType="int"
+            resultType="org.scoula.weightedToken.dto.TokenScore">
         SELECT
             t.token_id,
             t.token,
             t.article_id,
-            t.publish_time,  -- ✅ 기사 발행일을 여기서 가져옴
+            t.publish_time AS publishTime,  -- ✅ 기사 발행일을 여기서 가져옴
             (t.frequency / doc_total.total_words) AS tf,
             LOG(#{totalDocs} / (1 + df_table.df)) AS idf,
             (t.frequency / doc_total.total_words) * LOG(#{totalDocs} / (1 + df_table.df)) AS tfidf
@@ -26,16 +27,23 @@
         ) df_table ON t.token = df_table.token
     </select>
 
-
     <select id="selectTotalDocs" resultType="int">
         SELECT COUNT(*) FROM news_articles
     </select>
 
-    <select id="selectNextAvailableVolatility" resultType="Double">
-        SELECT volatility
+    <select id="selectNextAvailableVolatility" parameterType="java.time.LocalDate"
+            resultType="map">
+        SELECT trade_date, daily_volatility
         FROM stock_prices
-        WHERE stock_date >= #{targetDate}
-        ORDER BY stock_date ASC
+        WHERE trade_date >= #{tradeDate, jdbcType=DATE}
+        ORDER BY trade_date ASC
             LIMIT 1
     </select>
+
+    <insert id="insertKeyword" parameterType="map">
+        INSERT INTO article_keywords (keyword,weight)
+        VALUES (#{keyword},#{weight})
+        ON DUPLICATE KEY UPDATE weight = VALUES(weight)
+    </insert>
+
 </mapper>

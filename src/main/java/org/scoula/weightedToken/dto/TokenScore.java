@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,6 +20,8 @@ public class TokenScore {
     private double normalizedVol;      // 표준화된 변동률
     private double finalWeightedScore; // TF-IDF X 변동률
     private LocalDateTime publishTime; // 기사 발행일
+    private LocalDateTime tradeDate;
+    private double dailyVolatility;
 
     // 선택적으로 생성자 유지 (편의상)
     public TokenScore(long tokenId, String token, long articleId, double tfidf, LocalDateTime publishTime) {

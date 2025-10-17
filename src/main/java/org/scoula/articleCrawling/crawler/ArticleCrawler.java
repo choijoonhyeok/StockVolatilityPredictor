@@ -66,6 +66,7 @@ public class ArticleCrawler {
         String dbPassword = "1234";
 
         int batchSize = 50;
+        Random random = new Random();
 
         try (Connection conn = DriverManager.getConnection(jdbcURL, dbUser, dbPassword)) {
             String insertSQL = "INSERT INTO news_articles (title, content, publish_time) VALUES (?, ?, ?)";
@@ -83,7 +84,7 @@ public class ArticleCrawler {
 
                 while (true) {
                     String url = String.format(
-                            "https://search.daum.net/search?p=%d&period=u&q=삼성전자&w=news&DA=STC&cp=%s&cpname=%s&sd=%s&ed=%s",
+                            "https://search.daum.net/search?p=%d&period=u&q=삼성전자+주가&w=news&DA=STC&cp=%s&cpname=%s&sd=%s&ed=%s&article_type=photo",
                             page, pressId, pressName, startDate, endDate
                     );
 
@@ -165,10 +166,19 @@ public class ArticleCrawler {
                                 pstmt.executeBatch();
                             }
 
+                            // ✅ 기사 단위 지연 (1~3초 랜덤)
+                            Thread.sleep(1000 + random.nextInt(2000));
+
                         } catch (IOException e) {
                             System.out.println("본문 크롤링 실패 (" + link + "): " + e.getMessage());
-                        }
+                        } catch (InterruptedException ignored) {}
                     }
+
+                    // ✅ 페이지 단위 지연 (2~5초 랜덤)
+                    try {
+                        Thread.sleep(2000 + random.nextInt(3000));
+                    } catch (InterruptedException ignored) {}
+
                     page++;
                 }
             }
