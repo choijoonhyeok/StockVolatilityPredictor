@@ -20,21 +20,20 @@ public class ArticleVolatilityThreshold {
         configuration.addMapper(ArticleVolatilityThresholdMapper.class);
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 
-        // 실행
         try (SqlSession session = sqlSessionFactory.openSession()) {
             ArticleVolatilityThresholdMapper mapper = session.getMapper(ArticleVolatilityThresholdMapper.class);
 
-            double volatilityThreshold = 2.35;  // 변동률 기준 %
+            double volatilityThreshold =  0.0235; // 변동률 기준 (%)
             Double thresholdScore = mapper.calculateThresholdScore(volatilityThreshold);
 
             if (thresholdScore != null) {
                 System.out.printf(
-                        "📈 변동률 %.2f%% 이상인 기사들의 평균 점수: %.6f%n",
+                        "📊 변동률 %.2f%% 이상인 기사들의 최소 평균 가중치(임계점): %.6f%n",
                         volatilityThreshold,
                         thresholdScore
                 );
             } else {
-                System.out.println("⚠️ 기준 변동률 이상의 기사가 없습니다.");
+                System.out.println("⚠️ 기준 변동률 이상의 기사 데이터가 없습니다.");
             }
         }
     }

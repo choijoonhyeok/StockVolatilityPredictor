@@ -46,7 +46,8 @@ dependencies {
     implementation 'org.json:json:20230227'
 
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'org.seleniumhq.selenium:selenium-java:4.14.0'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.14.1'
+
     // WebDriverManager
     implementation 'io.github.bonigarcia:webdrivermanager:5.5.3'
 
@@ -56,6 +57,10 @@ dependencies {
     //표준편차 그래프
     implementation 'org.jfree:jfreechart:1.5.4'
     implementation 'org.jfree:jcommon:1.0.24'
+
+
+
+
 }
 
 test {

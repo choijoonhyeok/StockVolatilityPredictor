@@ -39,20 +39,21 @@ public class ArticleWeightCalculator {
 
     public void calculateTotalArticleWeights() {
         try (SqlSession session = sqlSessionFactory.openSession()) {
-            org.scoula.ArticleWeightCalculator.WeightedArticleMapper mapper = session.getMapper(org.scoula.ArticleWeightCalculator.WeightedArticleMapper.class);
+            WeightedArticleMapper mapper = session.getMapper(WeightedArticleMapper.class);
 
-            // 각 기사(article_id)별 총 가중치 합계 조회
-            List<Map<String, Object>> results = mapper.selectArticleWeightSum();
+            List<Map<String, Object>> results = mapper.selectArticleWeightAverage();
 
-            System.out.println("=== 📊 기사별 총 가중치 합계 ===");
+            System.out.println("=== 📈 기사별 평균 가중치 (단어수 보정) ===");
             for (Map<String, Object> row : results) {
                 long articleId = ((Number) row.get("articleId")).longValue();
-                double totalWeight = ((Number) row.get("totalWeight")).doubleValue();
+                double avgWeight = ((Number) row.get("avgWeight")).doubleValue();
+                long tokenCount = ((Number) row.get("tokenCount")).longValue();
 
-                System.out.printf("Article ID: %-5d | Total Weight: %.6f%n", articleId, totalWeight);
+                System.out.printf("Article ID: %-5d | Avg Weight: %.6f | Tokens: %d%n",
+                        articleId, avgWeight, tokenCount);
             }
 
-            System.out.println("✅ 모든 기사에 대한 가중치 합계 계산 완료!");
+            System.out.println("✅ 평균 가중치 계산 완료!");
         }
     }
 }

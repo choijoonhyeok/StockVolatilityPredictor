@@ -22,7 +22,7 @@ public class stockCrawler {
 
         // 날짜 범위
         LocalDate startDate = LocalDate.of(2020, 9, 26);
-        LocalDate endDate = LocalDate.of(2025, 9, 26);
+        LocalDate endDate = LocalDate.of(2025, 10, 19);
 
         try (Connection conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPassword)) {
             String insertSQL = "INSERT INTO stock_prices (stock_code, trade_date, open_price, close_price, high_price, low_price, daily_volatility) "

@@ -101,7 +101,7 @@ public class WeightedToken {
                 ts.setNormalizedVol(stdVol == 0 ? 0 : (ts.getDailyVolatility() - meanVol) / stdVol);
 
                 // 최종 점수 계산
-                ts.setFinalWeightedScore(ts.getNormalized() * ts.getNormalizedVol());
+                ts.setFinalWeightedScore(ts.getNormalized() + ts.getNormalizedVol());
 
                 System.out.printf(
                         "Token: %-15s | Publish_time: %s | trade_date: %s | daily_volatility: %.6f | TF-IDF: %.6f | Normalized TF-IDF: %.6f | NormalizedVol: %.6f | FinalScore: %.6f | Count: %d%n",
